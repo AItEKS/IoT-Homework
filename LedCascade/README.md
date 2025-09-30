@@ -94,7 +94,7 @@ ISR(TIMER1_COMPA_vect) {
 
 ### 4.1. Симуляция в Tinkercad
 
-**Ссылка на проект:** [**https://www.tinkercad.com/**](https://www.tinkercad.com/)
+**Ссылка на проект:** [**https://www.tinkercad.com/things/0Q0f1BOWXfi/editel?sharecode=FQzbHwKq_tgor-V93D0ogG9MI8lCRUZDu7p-Ipv-Dt4**](https://www.tinkercad.com/things/0Q0f1BOWXfi/editel?sharecode=FQzbHwKq_tgor-V93D0ogG9MI8lCRUZDu7p-Ipv-Dt4)
 
 ### 4.2. Видео-демонстрация на реальном устройстве
 
