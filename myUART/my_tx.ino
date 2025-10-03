@@ -75,9 +75,9 @@ ISR(TIMER1_COMPA_vect) {
     case 7:
     case 8:
       if (tx_byte_to_send & 1) {
-        TX_PORT = TX_PORT | (1 << TX_PIN);
+        TX_PORT = TX_PORT | (1 << TX_PIN); // HIGH-сигнал
       } else {
-        TX_PORT = TX_PORT & ~(1 << TX_PIN);
+        TX_PORT = TX_PORT & ~(1 << TX_PIN); // LOW-сигнал
       }
       tx_byte_to_send = tx_byte_to_send >> 1;
       break;
