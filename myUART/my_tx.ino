@@ -15,10 +15,6 @@ volatile uint8_t tx_bit_index;
 
 volatile uint16_t timer_ticks_per_bit;
 
-// void uart_set_baudrate(int rate) {
-//   int Tbit = 1 / rate;
-// }
-
 void uart_init(uint16_t baud_rate) {
   const uint8_t prescaler = 8;
   timer_ticks_per_bit = (F_CPU / prescaler) / baud_rate;
