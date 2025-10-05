@@ -50,25 +50,27 @@ char uart_read() {
   return b;
 }
 
+// случилось прерывание - с LOW -> HIGH
 ISR(INT0_vect) {
-    EIMSK = EIMSK & ~(1 << INT0);
-
-    TCNT1 = 0;
-    OCR1B = timer_ticks_per_bit + (timer_ticks_per_bit / 2);
+    EIMSK = EIMSK & ~(1 << INT0); // отключаем это прерывание 
+    
+    TCNT1 = 0; // сбрасываем таймер 
+    OCR1B = timer_ticks_per_bit + (timer_ticks_per_bit / 2); // сравнение устанавливаем на 1.5*Tbit
 
     rx_bit_index = 0;
     rx_byte_received = 0;
 
-    TIMSK1 = TIMSK1 | (1 << OCIE1B);
+    TIMSK1 = TIMSK1 | (1 << OCIE1B); // включаем прервание по совпадению таймера
 }
 
+// прерывание на сраванение
 ISR(TIMER1_COMPB_vect) {
-    OCR1B += timer_ticks_per_bit;
+    OCR1B += timer_ticks_per_bit; // настравиваем следующее прерывание
 
-    if (rx_bit_index < 8) { // Считываем 8 бит данных
-        rx_byte_received >>= 1;
+    if (rx_bit_index < 8) { // считываем 8 бит данных
+        rx_byte_received = rx_byte_received >> 1;
         if (RX_PIN_REG & (1 << RX_PIN)) {
-            rx_byte_received |= 0x80;
+            rx_byte_received = rx_byte_received | 0x80; // устанавливаем в верном порядке биты.
         }
     } else { // это стоп-бит
         uint8_t next_head = (rx_head + 1) % RX_BUFFER_SIZE;
@@ -77,8 +79,8 @@ ISR(TIMER1_COMPB_vect) {
             rx_head = next_head;
         }
 
-        TIMSK1 = TIMSK1 & ~(1 << OCIE1B);
-        EIMSK = EIMSK | (1 << INT0);
+        TIMSK1 = TIMSK1 & ~(1 << OCIE1B); // выключаем прервание по времени
+        EIMSK = EIMSK | (1 << INT0); // включаем прервание на передачу в порт
     }
     rx_bit_index++;
 }
