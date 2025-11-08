@@ -23,3 +23,5 @@
 ```
 
 Но на данном этапе пока не реилзован `delay()` и не убран `digitalWrite()`.
+
+[Tinkercad](https://www.tinkercad.com/things/kmnLW25u2nl-copy-of-cascadingregisters/editel?returnTo=https%3A%2F%2Fwww.tinkercad.com%2Fdashboard%2Fdesigns%2Fall)
