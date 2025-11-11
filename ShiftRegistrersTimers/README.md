@@ -24,4 +24,6 @@
 
 Но на данном этапе пока не реилзован `delay()` и не убран `digitalWrite()`.
 
+[Видеодемонстрация](video_2025-11-11_08-48-45.mp4)
+
 [Tinkercad](https://www.tinkercad.com/things/kmnLW25u2nl-copy-of-cascadingregisters/editel?returnTo=https%3A%2F%2Fwww.tinkercad.com%2Fdashboard%2Fdesigns%2Fall)
