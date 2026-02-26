@@ -11,11 +11,13 @@ String id(){
 }
 
 void start_AP_mode() {
-    IPAddress apIP(192, 168, 4, 1);
+    IPAddress AP_IP(192, 168, 4, 1);
+    Serial.println("Attempt to start WiFi AP");
     WiFi.disconnect();
     WiFi.mode(WIFI_AP);
-
+    WiFi.softAPConfig(AP_IP, AP_IP, IPAddress(255, 255, 255, 0));
     WiFi.softAP(SSID_AP + "_" + id(), PASSWORD_AP);
+    Serial.println("WiFi AP is up, see " + SSID_AP + "_" + id());
 }
 
 void start_client_mode() {
@@ -23,6 +25,8 @@ void start_client_mode() {
 }
 
 void init_WiFi(bool mode) {
+    start_AP_mode();
+    return;
     if (mode == WIFI_MODE_CLIENT) {
         start_client_mode();
     } else {

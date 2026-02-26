@@ -7,7 +7,7 @@ void setup() {
 }
 
 void loop() {
-    delay(500);
-    Serial.print("Our ID: ");
-    Serial.println(id());
+    //delay(500);
+    //Serial.print("Our ID: ");
+    //Serial.println(id());
 }
