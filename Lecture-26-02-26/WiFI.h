@@ -1,5 +1,12 @@
+#include <ESP8266WiFi.h>
+#include <ESPWiFiClient.h>
+#include <ESP8266WiFiMulti.h>
+
 String id() {
-    // TODO: get MAC-address
+    uint8_t mac[WL_MAC_ADDR_LENGTH]
+    WiFi.softAPmacAddress(mac);
+    String macID = String(mac[WL_MAC_ADDR_LENGTH-2], HEX); 
+    macID = macID + String(mac[WL_MAC_ADDR_LENGTH-1], HEX)   
     return "";
 }
 
