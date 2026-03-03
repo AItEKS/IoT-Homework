@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 PORT = '/dev/ttyUSB0'
 BAUD = 9600
-MIN_DIST = 10
-MAX_DIST = 30
+MIN_DIST = 5
+MAX_DIST = 100
 
 def check_coverage(distances, min_d, max_d):
     if not distances:
