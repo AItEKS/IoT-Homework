@@ -17,28 +17,51 @@ void move(bool left_dir, int left_speed, bool right_dir, int right_speed) {
   analogWrite(SPEED_RIGHT, right_speed);
 }
 
+void forward(int speed) {
+  move(LEFT_FORWARD, speed, RIGHT_FORWARD, speed);
+}
+
+void backward(int speed) {
+  move(LEFT_BACKWARD, speed, RIGHT_BACKWARD, speed);
+}
+
+void turn_left(int steepness) {
+  move(LEFT_FORWARD, 255, RIGHT_FORWARD, steepness);
+}
+
+void turn_right(int steepness) {
+  move(LEFT_FORWARD, steepness, RIGHT_FORWARD, 255);
+}
+
+
+void rotate_left(int speed) {
+  move(LEFT_BACKWARD, speed, RIGHT_FORWARD, speed);
+
+}
+
+void rotate_right(int speed) {
+  move(LEFT_FORWARD, speed, RIGHT_BACKWARD, speed);
+}
+
 void setup() {
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(SPEED_RIGHT, OUTPUT);
   pinMode(DIR_LEFT, OUTPUT);
   pinMode(SPEED_LEFT, OUTPUT);
 
-  digitalWrite(DIR_RIGHT, RIGHT_FORWARD);
-  digitalWrite(DIR_LEFT, LEFT_FORWARD);
-  digitalWrite(SPEED_RIGHT, LOW);
-  digitalWrite(SPEED_LEFT, HIGH);
+  forward(100);
   delay(2000);
-  digitalWrite(DIR_RIGHT, RIGHT_FORWARD);
-  digitalWrite(DIR_LEFT, LEFT_BACKWARD);
-  digitalWrite(SPEED_RIGHT, HIGH);
-  digitalWrite(SPEED_LEFT, LOW);
-
+  backward(100);
   delay(2000);
-  move(LEFT_FORWARD, 255, RIGHT_FORWARD, 0);
+  turn_left(100);
   delay(2000);
-  move(LEFT_FORWARD, 0, RIGHT_FORWARD, 255);
+  turn_right(100);
   delay(2000);
-  move(LEFT_FORWARD, 0, RIGHT_FORWARD, 0);
+  rotate_left(100);
+  delay(2000);
+  rotate_right(100);
+  delay(2000);
+  forward(0);
 }
 
 void loop() {
