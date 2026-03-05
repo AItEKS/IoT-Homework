@@ -72,4 +72,4 @@ pip install pyserial numpy matplotlib
 
 ## Ссылки
 
-*   **Видео-демонстрация:** [https://drive.google.com/file/d/1meduo5fcf9JKW-R_AU3t2Wa4LdaH8t7S/view]
+*   **Видео-демонстрация:** [Ссылка на видео](https://drive.google.com/file/d/1i5BmYVLoq9o7Zrq8NEWwjK574LH3NkXG/view?usp=drive_link)
