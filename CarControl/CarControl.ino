@@ -10,21 +10,25 @@
 #define TRIG_LEFT 10
 #define ECHO_LEFT 11
 
-#define LEFT_FORWARD HIGH
-#define LEFT_BACKWARD LOW
+#define LEFT_FORWARD LOW
+#define LEFT_BACKWARD HIGH
 
-#define RIGHT_FORWARD HIGH
-#define RIGHT_BACKWARD LOW
+#define RIGHT_FORWARD LOW
+#define RIGHT_BACKWARD HIGH
 
-#define THR 7
+#define THR 12
 
-#define WF 7
-#define WC 4
+#define WF 9
+#define WC 5
+
+#define SPEED_STRAIGHT   50
+#define SPEED_TURN_OUTER 55
+#define SPEED_TURN_INNER 45
+#define SPEED_ROTATE     45
 
 enum RobotState {
   STATE_FORWARD,
   STATE_ROTATE_RIGHT,
-  STATE_ROTATE_LEFT,
   STATE_TURN_RIGHT,
   STATE_TURN_LEFT
 };
@@ -41,43 +45,40 @@ void move(bool left_dir, int left_speed, bool right_dir, int right_speed) {
   analogWrite(SPEED_RIGHT, right_speed);
 }
 
-void forward(int speed) {
-  move(LEFT_FORWARD, speed, RIGHT_FORWARD, speed);
+void forward() {
+  move(LEFT_FORWARD, SPEED_STRAIGHT, RIGHT_FORWARD, SPEED_STRAIGHT);
 }
 
-void backward(int speed) {
-  move(LEFT_BACKWARD, speed, RIGHT_BACKWARD, speed);
+void turn_left() {
+  move(LEFT_FORWARD, SPEED_TURN_OUTER, RIGHT_FORWARD, SPEED_TURN_INNER);
 }
 
-void turn_left(int steepness) {
-  move(LEFT_FORWARD, 255, RIGHT_FORWARD, steepness);
+void turn_right() {
+  move(LEFT_FORWARD, SPEED_TURN_INNER, RIGHT_FORWARD, SPEED_TURN_OUTER);
 }
 
-void turn_right(int steepness) {
-  move(LEFT_FORWARD, steepness, RIGHT_FORWARD, 255);
+void rotate_right() {
+  move(LEFT_BACKWARD, SPEED_ROTATE, RIGHT_FORWARD, SPEED_ROTATE);
 }
 
-
-void rotate_left(int speed) {
-  move(LEFT_BACKWARD, speed, RIGHT_FORWARD, speed);
-}
-
-void rotate_right(int speed) {
-  move(LEFT_FORWARD, speed, RIGHT_BACKWARD, speed);
-}
-
-int getDistance(int trigPin, int echoPin) {
+float getDistance(int trigPin, int echoPin, float lastVal) {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   
-  float duration = pulseIn(echoPin, HIGH, 30000); 
+  unsigned long duration = pulseIn(echoPin, HIGH, 15000); 
   
-  if (duration == 0) return 999;
+  if (duration == 0) {
+    return 100.0;
+  }
   
-  return duration * 0.034 / 2;
+  float newDist = duration * 0.034 / 2.0;
+  
+  if (lastVal == 100.0) return newDist;
+  
+  return (newDist * 0.4) + (lastVal * 0.6);
 }
 
 void setup() {
@@ -85,80 +86,75 @@ void setup() {
   
   pinMode(TRIG_FRONT, OUTPUT);
   pinMode(ECHO_FRONT, INPUT);
+  
+  pinMode(TRIG_LEFT, OUTPUT);
+  pinMode(ECHO_LEFT, INPUT);
 
   pinMode(DIR_RIGHT, OUTPUT);
   pinMode(SPEED_RIGHT, OUTPUT);
   pinMode(DIR_LEFT, OUTPUT);
   pinMode(SPEED_LEFT, OUTPUT);
-
-  digitalWrite(DIR_LEFT, LEFT_FORWARD);
-  digitalWrite(DIR_RIGHT, RIGHT_FORWARD);
-  analogWrite(SPEED_LEFT, 150);
-  analogWrite(SPEED_RIGHT, 150);
-  delay(3000);
-  analogWrite(SPEED_LEFT, 0);
-  analogWrite(SPEED_RIGHT, 0);
+  
+  delay(500);
+  distFront = getDistance(TRIG_FRONT, ECHO_FRONT, 20);
+  distLeft = getDistance(TRIG_LEFT, ECHO_LEFT, 10);
 }
 
 void loop() {
-  distFront = getDistance(TRIG_FRONT, ECHO_FRONT);
-  distLeft = getDistance(TRIG_LEFT, ECHO_LEFT);
+  distFront = getDistance(TRIG_FRONT, ECHO_FRONT, distFront);
+  distLeft = getDistance(TRIG_LEFT, ECHO_LEFT, distLeft);
 
   switch (currState) {
     case STATE_FORWARD:
-      forward(255);
+      forward();
 
       if (distFront <= THR) {
         currState = STATE_ROTATE_RIGHT;
-        Serial.println("Switch state: FORWARD -> ROTATE_RIGHT");
+        Serial.println("-> ROTATE_RIGHT");
       }
       else if (distLeft > WF) {
         currState = STATE_TURN_LEFT;
-        Serial.println("Switch state: FORWARD -> TURN_LEFT");
+        Serial.println("-> TURN_LEFT");
       }
       else if (distLeft < WC) {
         currState = STATE_TURN_RIGHT;
-        Serial.println("Switch state: FORWARD -> TURN_RIGHT");
+        Serial.println("-> TURN_RIGHT");
       }
-
       break;
 
     case STATE_ROTATE_RIGHT:
-      rotate_right(127);
+      rotate_right();
 
-      if (distFront > (THR + 10)) { 
+      if (distFront > (THR + 15)) { 
         currState = STATE_FORWARD;
-        Serial.println("Switch state: ROTATE_RIGHT -> FORWARD");
+        Serial.println("-> FORWARD");
       }
-
       break;
 
     case STATE_TURN_LEFT:
-      turn_left(127);
+      turn_left();
 
-      if (distFront < THR) {
+      if (distFront <= THR) {
         currState = STATE_ROTATE_RIGHT;
-        Serial.println("Switch state: TURN_LEFT -> ROTATE_RIGHT");
+        Serial.println("-> ROTATE_RIGHT");
       }
-      else if (distLeft <= WF) {
+      else if (distLeft <= WF && distLeft >= WC) {
         currState = STATE_FORWARD;
-        Serial.println("Switch state: TURN_LEFT -> FORWARD");
+        Serial.println("-> FORWARD");
       }
-      
       break;
     
     case STATE_TURN_RIGHT:
-      turn_right(127);
+      turn_right();
 
-      if (distFront < THR) {
+      if (distFront <= THR) {
         currState = STATE_ROTATE_RIGHT;
-        Serial.println("Switch state: TURN_RIGHT -> ROTATE_RIGHT");
+        Serial.println("-> ROTATE_RIGHT");
       }
-      else if (distLeft > WC) {
+      else if (distLeft >= WC && distLeft <= WF) {
         currState = STATE_FORWARD;
-        Serial.println("Switch state: TURN_RIGHT -> FORWARD");
+        Serial.println("-> FORWARD");
       }
-
       break;
   }
 
